@@ -38,17 +38,43 @@ function App() {
 
   return (
     <div className="main-container">
-      <div className="camera">
-        <video ref={videoRef} style={{ width: VIDEO_WIDTH }}>Video stream not available.</video>
-        <br />
-        <button onClick={takePicture}>Take photo</button>
+      <div className="header">
+        <h1>MaskOn</h1>
+        <table>
+          <tr>
+            <td>Detected faces:</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td>Correctly masked:</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td>Incorrectly masked:</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td>No Mask:</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td>Ratio:</td>
+            <td>0%</td>
+          </tr>
+        </table>
       </div>
 
-      <canvas ref={canvasRef} style={{ display: 'none' }}>
+      <div className="camera">
+        <video ref={videoRef} style={{ width: VIDEO_WIDTH }}>Video stream not available.</video>
+      </div>
 
-      </canvas>
-      <div className="output">
-        <img ref={imgRef} alt="The screen capture will appear in this box." src={imgData} />
+      <div className="footer">
+        <div>Alert threshold:</div>
+        <input type="range" />
+        <div className="labels">
+          <span>0%</span>
+          <span>100%</span>
+        </div>
       </div>
     </div>
   );

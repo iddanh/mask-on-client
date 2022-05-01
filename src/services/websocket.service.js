@@ -17,7 +17,9 @@ const send = (data) => {
   socket.send(data);
 }
 
-export default {
+const exports = {
   connect,
   send
 };
+
+export default exports;

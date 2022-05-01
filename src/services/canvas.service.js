@@ -24,15 +24,17 @@ const drawFrame = (videoRef, receiveCanvasRef, frame) => {
   const height = video.videoHeight / (video.videoWidth / width);
   const context = canvas.getContext('2d')
 
-  const img = new Image;
+  const img = new Image();
   img.onload = function () {
     context.drawImage(img, 0, 0, width, height);
   };
   img.src = frame;
 }
 
-export default {
+const exports = {
   VIDEO_WIDTH,
   takePicture,
   drawFrame
-}
+};
+
+export default exports;

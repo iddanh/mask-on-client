@@ -10,14 +10,14 @@ function App() {
   const receiveCanvasRef = React.useRef();
   const [videoHeight, setVideoHeight] = React.useState(null);
 
-  const sendFrameToServer = () => {
+  const sendFrameToServer = React.useCallback(() => {
     if (!videoHeight) {
       setVideoHeight(videoRef.current.videoHeight / (videoRef.current.videoWidth / canvasService.VIDEO_WIDTH))
     }
 
     socketService.send(canvasService.takePicture(videoRef, captureCanvasRef));
     videoRef.current.requestVideoFrameCallback(sendFrameToServer);
-  }
+  }, [videoHeight]);
 
   React.useEffect(() => {
     socketService.connect((frame) => canvasService.drawFrame(videoRef, receiveCanvasRef, frame));

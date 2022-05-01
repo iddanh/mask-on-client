@@ -8,7 +8,7 @@ function App() {
   const videoRef = React.useRef();
   const captureCanvasRef = React.useRef();
   const receiveCanvasRef = React.useRef();
-  const [imgData, setImgData] = React.useState(null);
+  const [videoHeight, setVideoHeight] = React.useState(null);
 
   const sendFrameToServer = () => {
     socketService.send(takePicture());
@@ -16,7 +16,20 @@ function App() {
   }
 
   React.useEffect(() => {
-    socketService.connect((frame) => setImgData(frame));
+    socketService.connect((frame) => {
+      const canvas = receiveCanvasRef.current;
+      const video = videoRef.current;
+
+      const width = VIDEO_WIDTH;
+      const height = video.videoHeight / (video.videoWidth / width);
+      const context = canvas.getContext('2d')
+
+      const img = new Image;
+      img.onload = function () {
+        context.drawImage(img, 0, 0, width, height);
+      };
+      img.src = frame;
+    });
 
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
       .then(function (stream) {
@@ -36,6 +49,9 @@ function App() {
 
     const width = VIDEO_WIDTH;
     const height = video.videoHeight / (video.videoWidth / width);
+    if (!videoHeight) {
+      setVideoHeight(height);
+    }
 
     const context = canvas.getContext('2d');
 
@@ -51,6 +67,7 @@ function App() {
       <div className="header">
         <h1>MaskOn</h1>
         <table>
+          <tbody>
           <tr>
             <td>Detected faces:</td>
             <td>0</td>
@@ -71,12 +88,16 @@ function App() {
             <td>Ratio:</td>
             <td>0%</td>
           </tr>
+          </tbody>
         </table>
       </div>
 
-      <div className="camera">
-        <img ref={receiveCanvasRef} src={imgData} width={VIDEO_WIDTH} />
-      </div>
+      <canvas
+        className="camera"
+        ref={receiveCanvasRef}
+        width={VIDEO_WIDTH}
+        height={videoHeight}
+      />
 
       <div style={{ display: 'none' }}>
         <video ref={videoRef} style={{ width: VIDEO_WIDTH }}>Video stream not available.</video>

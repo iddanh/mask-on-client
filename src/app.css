@@ -27,7 +27,7 @@
   text-align: left;
 }
 
-video {
+.camera {
   border: 1px solid black;
   margin: 20px 0;
   max-width: 100%;

@@ -1,8 +1,8 @@
 import React from 'react';
-import './app.css';
-import socketService from './websocket.service';
+import socketService from './services/websocket.service';
+import canvasService from './services/canvas.service';
 
-const VIDEO_WIDTH = 480;
+import './app.css';
 
 function App() {
   const videoRef = React.useRef();
@@ -11,56 +11,30 @@ function App() {
   const [videoHeight, setVideoHeight] = React.useState(null);
 
   const sendFrameToServer = () => {
-    socketService.send(takePicture());
+    if (!videoHeight) {
+      setVideoHeight(videoRef.current.videoHeight / (videoRef.current.videoWidth / canvasService.VIDEO_WIDTH))
+    }
+
+    socketService.send(canvasService.takePicture(videoRef, captureCanvasRef));
     videoRef.current.requestVideoFrameCallback(sendFrameToServer);
   }
 
   React.useEffect(() => {
-    socketService.connect((frame) => {
-      const canvas = receiveCanvasRef.current;
-      const video = videoRef.current;
-
-      const width = VIDEO_WIDTH;
-      const height = video.videoHeight / (video.videoWidth / width);
-      const context = canvas.getContext('2d')
-
-      const img = new Image;
-      img.onload = function () {
-        context.drawImage(img, 0, 0, width, height);
-      };
-      img.src = frame;
-    });
+    socketService.connect((frame) => canvasService.drawFrame(videoRef, receiveCanvasRef, frame));
 
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
       .then(function (stream) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
+        const video = videoRef.current;
 
-        videoRef.current.requestVideoFrameCallback(sendFrameToServer);
+        video.srcObject = stream;
+        video.play();
+
+        video.requestVideoFrameCallback(sendFrameToServer);
       })
       .catch(function (err) {
         console.log("Error connecting to camera stream: " + err);
       });
   }, []);
-
-  function takePicture() {
-    const canvas = captureCanvasRef.current;
-    const video = videoRef.current;
-
-    const width = VIDEO_WIDTH;
-    const height = video.videoHeight / (video.videoWidth / width);
-    if (!videoHeight) {
-      setVideoHeight(height);
-    }
-
-    const context = canvas.getContext('2d');
-
-    canvas.width = width;
-    canvas.height = height;
-    context.drawImage(videoRef.current, 0, 0, width, height);
-
-    return canvas.toDataURL('image/png');
-  }
 
   return (
     <div className="main-container">
@@ -95,12 +69,12 @@ function App() {
       <canvas
         className="camera"
         ref={receiveCanvasRef}
-        width={VIDEO_WIDTH}
+        width={canvasService.VIDEO_WIDTH}
         height={videoHeight}
       />
 
       <div style={{ display: 'none' }}>
-        <video ref={videoRef} style={{ width: VIDEO_WIDTH }}>Video stream not available.</video>
+        <video ref={videoRef} style={{ width: canvasService.VIDEO_WIDTH }}>Video stream not available.</video>
         <canvas ref={captureCanvasRef} />
       </div>
 

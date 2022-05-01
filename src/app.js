@@ -1,27 +1,37 @@
 import React from 'react';
 import './app.css';
+import socketService from './websocket.service';
 
 const VIDEO_WIDTH = 480;
 
 function App() {
   const videoRef = React.useRef();
-  const canvasRef = React.useRef();
-  const imgRef = React.useRef();
+  const captureCanvasRef = React.useRef();
+  const receiveCanvasRef = React.useRef();
   const [imgData, setImgData] = React.useState(null);
 
+  const sendFrameToServer = () => {
+    socketService.send(takePicture());
+    videoRef.current.requestVideoFrameCallback(sendFrameToServer);
+  }
+
   React.useEffect(() => {
+    socketService.connect((frame) => setImgData(frame));
+
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
       .then(function (stream) {
         videoRef.current.srcObject = stream;
         videoRef.current.play();
+
+        videoRef.current.requestVideoFrameCallback(sendFrameToServer);
       })
       .catch(function (err) {
         console.log("Error connecting to camera stream: " + err);
       });
-  });
+  }, []);
 
   function takePicture() {
-    const canvas = canvasRef.current;
+    const canvas = captureCanvasRef.current;
     const video = videoRef.current;
 
     const width = VIDEO_WIDTH;
@@ -33,7 +43,7 @@ function App() {
     canvas.height = height;
     context.drawImage(videoRef.current, 0, 0, width, height);
 
-    setImgData(canvas.toDataURL('image/png'));
+    return canvas.toDataURL('image/png');
   }
 
   return (
@@ -65,7 +75,12 @@ function App() {
       </div>
 
       <div className="camera">
+        <img ref={receiveCanvasRef} src={imgData} width={VIDEO_WIDTH} />
+      </div>
+
+      <div style={{ display: 'none' }}>
         <video ref={videoRef} style={{ width: VIDEO_WIDTH }}>Video stream not available.</video>
+        <canvas ref={captureCanvasRef} />
       </div>
 
       <div className="footer">

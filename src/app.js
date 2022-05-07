@@ -16,11 +16,13 @@ function App() {
     }
 
     socketService.send(canvasService.takePicture(videoRef, captureCanvasRef));
-    videoRef.current.requestVideoFrameCallback(sendFrameToServer);
   }, [videoHeight]);
 
   React.useEffect(() => {
-    socketService.connect((frame) => canvasService.drawFrame(videoRef, receiveCanvasRef, frame));
+    socketService.connect(sendFrameToServer, (frame) => {
+      canvasService.drawFrame(videoRef, receiveCanvasRef, frame);
+      sendFrameToServer();
+    });
 
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
       .then(function (stream) {
@@ -28,8 +30,6 @@ function App() {
 
         video.srcObject = stream;
         video.play();
-
-        video.requestVideoFrameCallback(sendFrameToServer);
       })
       .catch(function (err) {
         console.log("Error connecting to camera stream: " + err);

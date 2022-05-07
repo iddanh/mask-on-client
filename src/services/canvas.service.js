@@ -13,7 +13,7 @@ const takePicture = (videoRef, captureCanvasRef) => {
   canvas.height = height;
   context.drawImage(videoRef.current, 0, 0, width, height);
 
-  return canvas.toDataURL('image/png');
+  return canvas.toDataURL('image/jpeg');
 }
 
 const drawFrame = (videoRef, receiveCanvasRef, frame) => {

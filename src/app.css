@@ -27,10 +27,31 @@
   text-align: left;
 }
 
+.camera-container {
+  position: relative;
+}
+
 .camera {
   border: 1px solid black;
   margin: 20px 0;
   max-width: 100%;
+  min-height: 360px;
+}
+
+.camera-container button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  background-color: cornflowerblue;
+  border: none;
+  padding: 15px;
+  border-radius: 5px;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .footer {

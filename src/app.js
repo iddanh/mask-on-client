@@ -8,6 +8,7 @@ function App() {
   const videoRef = React.useRef();
   const captureCanvasRef = React.useRef();
   const receiveCanvasRef = React.useRef();
+  const [active, setActive] = React.useState(false);
   const [videoHeight, setVideoHeight] = React.useState(null);
 
   const sendFrameToServer = React.useCallback(() => {
@@ -19,12 +20,16 @@ function App() {
   }, [videoHeight]);
 
   React.useEffect(() => {
+    if (!active) {
+      return;
+    }
+
     socketService.connect(sendFrameToServer, (frame) => {
       canvasService.drawFrame(videoRef, receiveCanvasRef, frame);
       sendFrameToServer();
     });
 
-    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", frameRate: { ideal: 15 } }, audio: false })
       .then(function (stream) {
         const video = videoRef.current;
 
@@ -34,7 +39,7 @@ function App() {
       .catch(function (err) {
         console.log("Error connecting to camera stream: " + err);
       });
-  }, []);
+  }, [active]);
 
   return (
     <div className="main-container">
@@ -66,12 +71,15 @@ function App() {
         </table>
       </div>
 
-      <canvas
-        className="camera"
-        ref={receiveCanvasRef}
-        width={canvasService.VIDEO_WIDTH}
-        height={videoHeight}
-      />
+      <div className="camera-container">
+        <canvas
+          className="camera"
+          ref={receiveCanvasRef}
+          width={canvasService.VIDEO_WIDTH}
+          height={videoHeight}
+        />
+        {!active && <button onClick={() => setActive(true)}>Start Camera</button>}
+      </div>
 
       <div style={{ display: 'none' }}>
         <video ref={videoRef} style={{ width: canvasService.VIDEO_WIDTH }}>Video stream not available.</video>

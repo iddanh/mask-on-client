@@ -5,7 +5,7 @@ const connect = (connectCallback, receiveCallback) => {
     get: (searchParams, prop) => searchParams.get(prop),
   });
 
-  socket = new WebSocket(params.server || 'ws://localhost:8080');
+  socket = new WebSocket(params.server || 'wss://maskon.cs.colman.ac.il:10151/');
 
   // Listen for connection
   socket.addEventListener('open', () => {

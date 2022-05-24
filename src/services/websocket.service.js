@@ -16,7 +16,7 @@ const connect = (connectCallback, receiveCallback) => {
 
   // Listen for messages
   socket.addEventListener('message', (event) => {
-    event.data.text().then(receiveCallback);
+    receiveCallback(event.data);
   });
 }
 

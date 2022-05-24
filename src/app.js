@@ -16,7 +16,12 @@ function App() {
       setVideoHeight(videoRef.current.videoHeight / (videoRef.current.videoWidth / canvasService.VIDEO_WIDTH))
     }
 
-    socketService.send(canvasService.takePicture(videoRef, captureCanvasRef));
+    const frame = canvasService.takePicture(videoRef, captureCanvasRef);
+    if (frame.length > 6) {
+      socketService.send(frame);
+    } else {
+      setTimeout(sendFrameToServer, 10);
+    }
   }, [videoHeight]);
 
   React.useEffect(() => {

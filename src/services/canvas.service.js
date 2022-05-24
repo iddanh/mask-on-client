@@ -28,7 +28,7 @@ const drawFrame = (videoRef, receiveCanvasRef, frame) => {
   img.onload = function () {
     context.drawImage(img, 0, 0, width, height);
   };
-  img.src = frame;
+  img.src = `data:image/jpeg;base64,${frame}`;
 }
 
 const exports = {

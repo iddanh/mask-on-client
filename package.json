@@ -2,7 +2,7 @@
   "name": "mask-on-client",
   "version": "0.1.0",
   "private": false,
-  "homepage": "mask-on-client",
+  "homepage": "",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.1.1",
@@ -11,13 +11,15 @@
     "react-dom": "^18.0.0",
     "react-scripts": "5.0.1",
     "sass": "^1.52.1",
+    "serve-static": "^1.15.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "serve": "node serve.js"
   },
   "eslintConfig": {
     "extends": [

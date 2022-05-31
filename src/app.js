@@ -1,14 +1,17 @@
 import React from 'react';
 import socketService from './services/websocket.service';
 import canvasService from './services/canvas.service';
+import Loader from './components/loader/loader.component';
+import title from './title.png';
 
-import './app.css';
+import './app.scss';
 
 function App() {
   const videoRef = React.useRef();
   const captureCanvasRef = React.useRef();
   const receiveCanvasRef = React.useRef();
   const [active, setActive] = React.useState(false);
+  const [isConnecting, setIsConnecting] = React.useState(false);
   const [videoHeight, setVideoHeight] = React.useState(null);
 
   const sendFrameToServer = React.useCallback(() => {
@@ -30,6 +33,7 @@ function App() {
     }
 
     socketService.connect(sendFrameToServer, (frame) => {
+      setIsConnecting(false);
       canvasService.drawFrame(videoRef, receiveCanvasRef, frame);
       sendFrameToServer();
     });
@@ -46,10 +50,15 @@ function App() {
       });
   }, [active]);
 
+  const connect = () => {
+    setActive(true);
+    setIsConnecting(true);
+  };
+
   return (
     <div className="main-container">
       <div className="header">
-        <h1>MaskOn</h1>
+        <img src={title} alt="MaskON" />
         <table>
           <tbody>
           <tr>
@@ -82,8 +91,10 @@ function App() {
           ref={receiveCanvasRef}
           width={canvasService.VIDEO_WIDTH}
           height={videoHeight}
-        />
-        {!active && <button onClick={() => setActive(true)}>Start Camera</button>}
+        >
+        </canvas>
+        {!active && <button onClick={connect}>Connect</button>}
+        {isConnecting && <Loader />}
       </div>
 
       <div style={{ display: 'none' }}>

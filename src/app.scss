@@ -1,6 +1,6 @@
 @keyframes alert {
   0% {
-    border-color: red;
+    border-color: #e85f61;
   }
   100% {
     border-color: transparent;
@@ -15,19 +15,20 @@
 }
 
 .header {
+  margin-top: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 
   img {
-    width: 60%;
+    width: 54%;
   }
 }
 
 .camera-container {
   display: flex;
   position: relative;
-  margin: 20px 0;
+  margin: 10px 0;
   box-shadow: rgba(255, 255, 255, 0.2) 0 0 30px 0;
   border-radius: 5px;
 
@@ -79,7 +80,7 @@
   text-align: left;
 
   .alert & {
-    color: red !important;
+    color: #e85f61 !important;
   }
 
   .labels {

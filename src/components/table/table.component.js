@@ -4,7 +4,7 @@ import './table.style.scss';
 
 export default function Table({ meta, onRatioChange }) {
   const total = meta.reduce((partialSum, a) => partialSum + a, 0);
-  const ratio = total > 0 ? (meta[0] / total) * 100 : 0;
+  const ratio = total > 0 ? (meta[0] / total) * 100 : '-';
 
   React.useEffect(() => {
     if (total > 0) {

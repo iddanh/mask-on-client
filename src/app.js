@@ -2,6 +2,7 @@ import React from 'react';
 import socketService from './services/websocket.service';
 import canvasService from './services/canvas.service';
 import Loader from './components/loader/loader.component';
+import Table from './components/table/table.component';
 import title from './title.png';
 
 import './app.scss';
@@ -13,6 +14,9 @@ function App() {
   const [active, setActive] = React.useState(false);
   const [isConnecting, setIsConnecting] = React.useState(false);
   const [videoHeight, setVideoHeight] = React.useState(null);
+  const [meta, setMeta] = React.useState([0, 0, 0]);
+  const [thresh, setThresh] = React.useState(50);
+  const [ratio, setRatio] = React.useState(null);
 
   const sendFrameToServer = React.useCallback(() => {
     if (!videoHeight) {
@@ -32,8 +36,13 @@ function App() {
       return;
     }
 
-    socketService.connect(sendFrameToServer, (frame) => {
+    socketService.connect(sendFrameToServer, (data) => {
       setIsConnecting(false);
+
+      const splitted = data.split('|');
+      const frame = splitted[0].substring(2, splitted[0].length - 1);
+      setMeta(JSON.parse(splitted[1]));
+
       canvasService.drawFrame(videoRef, receiveCanvasRef, frame);
       sendFrameToServer();
     });
@@ -56,33 +65,10 @@ function App() {
   };
 
   return (
-    <div className="main-container">
+    <div className={'main-container' + ((ratio !== null && ratio < thresh) ? ' alert' : '')}>
       <div className="header">
         <img src={title} alt="MaskON" />
-        <table>
-          <tbody>
-          <tr>
-            <td>Detected faces:</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>Correctly masked:</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>Incorrectly masked:</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>No Mask:</td>
-            <td>0</td>
-          </tr>
-          <tr>
-            <td>Ratio:</td>
-            <td>0%</td>
-          </tr>
-          </tbody>
-        </table>
+        <Table meta={meta} onRatioChange={setRatio} />
       </div>
 
       <div className="camera-container">
@@ -103,8 +89,8 @@ function App() {
       </div>
 
       <div className="footer">
-        <div>Alert threshold:</div>
-        <input type="range" />
+        <div>Alert threshold: {thresh}%</div>
+        <input type="range" value={thresh} onChange={(event) => setThresh(event.target.value)} />
         <div className="labels">
           <span>0%</span>
           <span>100%</span>

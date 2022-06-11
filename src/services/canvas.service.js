@@ -22,7 +22,7 @@ const drawFrame = (videoRef, receiveCanvasRef, frame) => {
 
   const width = VIDEO_WIDTH;
   const height = video.videoHeight / (video.videoWidth / width);
-  const context = canvas.getContext('2d')
+  const context = canvas.getContext('2d');
 
   const img = new Image();
   img.onload = function () {
